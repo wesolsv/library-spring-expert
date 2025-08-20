@@ -1,0 +1,49 @@
+# Rodar container posgres 16.3
+docker run --name librarydb -p 5432:5432 -e POSTGRES_PASSWORD=postgres_password -e POSTGRES_USER=postgres -e POSTGRES_DB=library --network library-network -d postgres:16.3
+
+# Rodar Pgadmin4
+docker run --name pgadmin4 -p 15432:80 -e PGADMIN_DEFAULT_EMAIL=admin@admin.com -e PGADMIN_DEFAULT_PASSWORD=admin --network library-network -d dpage/pgadmin4:8.9
+
+#Ao tentar acessar um container através do outro, eles não se comunicam por que não há um network que possa comunicar eles, simples.
+docker network create library-network
+
+Livro
+
+id UUID
+isbn varchar
+titulo varchar
+data_publicacao date
+genero enum
+preco numeric
+id_autor UUID -> Autor
+
+create table livro(
+	id uuid not null primary key,
+	isbn varchar(20) not null,
+	titulo varchar(150) not null,
+	data_publicacao date not null,
+	genero varchar(30) not null,
+	preco numeric (18, 2),
+	id_autor uuid not null references autor(id),
+	data_cadastro timestamp,
+    data_atualizacao timestamp,
+    id_usuario uuid
+	constraint chk_genero check (genero in ('FICCAO', 'FANTASIA', 'MISTERIO', 'ROMANCE', 'BIOGRAFIA', 'CIENCIA'))
+);
+
+Autor
+
+id UUID
+nome varchar
+data_nascimento date
+nacionalidade varchar
+
+create table autor(
+	id uuid not null primary key,
+	nome varchar(100) not null,
+	data_nascimento date not null,
+	nacionalidade varchar(50) not null
+	data_cadastro timestamp,
+	data_atualizacao timestamp,
+	id_usuario uuid
+);
