@@ -1,8 +1,8 @@
 package io.github.wesolsv.libraryapi.controller;
 
 import io.github.wesolsv.libraryapi.controller.dto.AutorDTO;
-import io.github.wesolsv.libraryapi.controller.dto.AutorResponseDTO;
 import io.github.wesolsv.libraryapi.controller.dto.ErroResposta;
+import io.github.wesolsv.libraryapi.controller.mappers.AutorMapper;
 import io.github.wesolsv.libraryapi.exceptions.OperacaonaoPermitidaException;
 import io.github.wesolsv.libraryapi.exceptions.RegistroDuplicadoException;
 import io.github.wesolsv.libraryapi.model.Autor;
@@ -24,17 +24,18 @@ import java.util.UUID;
 public class AutorController {
 
     private final AutorService service;
+    private final AutorMapper mapper;
 
     @PostMapping
-    public ResponseEntity<Object> salvar(@RequestBody @Valid AutorDTO autorDTO){
+    public ResponseEntity<Object> salvar(@RequestBody @Valid AutorDTO dto){
         try {
-            var autorEntidade = autorDTO.mapearParaAutor();
-            service.salvar(autorEntidade);
+            Autor autor = mapper.toEntity(dto);
+            service.salvar(autor);
 
             URI uri = ServletUriComponentsBuilder
                     .fromCurrentRequest()
                     .path("/{id}")
-                    .buildAndExpand(autorEntidade.getId())
+                    .buildAndExpand(autor.getId())
                     .toUri();
 
             return ResponseEntity.created(uri).build();
@@ -45,16 +46,14 @@ public class AutorController {
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<AutorResponseDTO> buscar(@PathVariable("id") String id){
+    public ResponseEntity<AutorDTO> obterDetalhes(@PathVariable("id") String id){
         var idAutor = UUID.fromString(id);
-        Optional<Autor> autorOptional = service.obterPorId(idAutor);
 
-        if(autorOptional.isPresent()){
-            Autor autor = autorOptional.get();
-            AutorResponseDTO dto = new AutorResponseDTO(autor.getId(), autor.getNome(), autor.getDataNascimento(), autor.getNacionalidade());
-            return ResponseEntity.ok(dto);
-        }
-        return ResponseEntity.notFound().build();
+        return service.obterPorId(idAutor)
+                .map(autor -> {
+                    AutorDTO dto = mapper.toDTO(autor);
+                    return ResponseEntity.ok(dto);
+                }).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("{id}")
@@ -77,21 +76,13 @@ public class AutorController {
     }
 
     @GetMapping
-    public ResponseEntity<List<AutorResponseDTO>> pesquisar(
+    public ResponseEntity<List<AutorDTO>> pesquisar(
             @RequestParam(value = "nome", required = false) String nome,
             @RequestParam(value = "nacionalidade", required = false) String nacionalidade){
 
         List<Autor> resultado = service.pesquisaByExample(nome, nacionalidade);
-        List<AutorResponseDTO> lista = resultado
-                .stream()
-                .map(autor ->
-                        new AutorResponseDTO(
-                                autor.getId(),
-                                autor.getNome(),
-                                autor.getDataNascimento(),
-                                autor.getNacionalidade()))
-                    .toList();
-
+        List<AutorDTO> lista = resultado.stream()
+                .map(mapper::toDTO).toList();
         return ResponseEntity.ok(lista);
     }
 
