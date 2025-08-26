@@ -51,6 +51,10 @@ public class LivroService {
             specs = specs.and(tituloLike(titulo));
         }
 
+        if(anoPublicacao != null){
+            specs = specs.and(anoPublicacaoEqual(anoPublicacao));
+        }
+
 //        if(nomeAutor != null){
 //            specs = specs.and(nomeAutorEqual(nomeAutor));
 //        }
