@@ -1,6 +1,6 @@
 package io.github.wesolsv.libraryapi.service;
 
-import io.github.wesolsv.libraryapi.exceptions.OperacaonaoPermitidaException;
+import io.github.wesolsv.libraryapi.exceptions.OperacaoNaoPermitidaException;
 import io.github.wesolsv.libraryapi.model.Autor;
 import io.github.wesolsv.libraryapi.repository.AutorRepository;
 import io.github.wesolsv.libraryapi.repository.LivroRepository;
@@ -43,7 +43,7 @@ public class AutorService {
 
     public void deletar(Autor autor){
         if(possuiLivro(autor)){
-            throw new OperacaonaoPermitidaException("Operação não permitida: O Autor possui livros cadastrados!");
+            throw new OperacaoNaoPermitidaException("Operação não permitida: O Autor possui livros cadastrados!");
         }
         repository.delete(autor);
     }
