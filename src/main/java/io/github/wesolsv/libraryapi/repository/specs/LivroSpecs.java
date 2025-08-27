@@ -2,6 +2,8 @@ package io.github.wesolsv.libraryapi.repository.specs;
 
 import io.github.wesolsv.libraryapi.model.GeneroLivro;
 import io.github.wesolsv.libraryapi.model.Livro;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
 import org.springframework.data.jpa.domain.Specification;
 
 public class LivroSpecs {
@@ -31,8 +33,11 @@ public class LivroSpecs {
                 anoPublicacao.toString());
     }
 
-    public static Specification<Livro> nomeAutorEqual(String nomeAutor) {
-        return (root, query, criteriaBuilder)
-                -> criteriaBuilder.equal(root.get("nomeAutor"), nomeAutor);
+    public static Specification<Livro> nomeAutorLike(String nomeAutor) {
+        return (root, query, cb) -> {
+                Join<Object, Object> joinAutor = root.join("autor", JoinType.LEFT);
+                return cb.like(cb.upper(joinAutor.get("nome")), "%" + nomeAutor.toUpperCase() + "%");
+//              return cb.like(cb.upper(root.get("autor").get("nome")), "%" + nomeAutor.toUpperCase() + "%");
+        };
     }
 }
