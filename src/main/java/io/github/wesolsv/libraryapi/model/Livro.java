@@ -52,7 +52,7 @@ public class Livro {
     @Column(name = "data_atualizacao", nullable = false)
     private LocalDateTime dataAtualizacao;
 
+    @ManyToOne
     @Column(name = "id_usuario")
-    private UUID idUsuario;
-
+    private Usuario usuario;
 }

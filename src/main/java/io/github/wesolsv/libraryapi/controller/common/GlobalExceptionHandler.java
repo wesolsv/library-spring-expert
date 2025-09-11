@@ -6,6 +6,7 @@ import io.github.wesolsv.libraryapi.exceptions.CampoInvalidoException;
 import io.github.wesolsv.libraryapi.exceptions.OperacaoNaoPermitidaException;
 import io.github.wesolsv.libraryapi.exceptions.RegistroDuplicadoException;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -49,6 +50,15 @@ public class GlobalExceptionHandler {
                 HttpStatus.UNPROCESSABLE_ENTITY.value(),
                 "Erro Validação",
                 List.of(new ErroCampo(e.getCampo(), e.getMessage())));
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ErroResposta handleAccessDeniedException(AccessDeniedException e){
+        return new ErroResposta(
+                HttpStatus.FORBIDDEN.value(),
+                "Acesso negado ao recurso",
+                List.of());
     }
 
     @ExceptionHandler(RuntimeException.class)

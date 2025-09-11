@@ -2,8 +2,10 @@ package io.github.wesolsv.libraryapi.service;
 
 import io.github.wesolsv.libraryapi.exceptions.OperacaoNaoPermitidaException;
 import io.github.wesolsv.libraryapi.model.Autor;
+import io.github.wesolsv.libraryapi.model.Usuario;
 import io.github.wesolsv.libraryapi.repository.AutorRepository;
 import io.github.wesolsv.libraryapi.repository.LivroRepository;
+import io.github.wesolsv.libraryapi.security.SecurityService;
 import io.github.wesolsv.libraryapi.validator.AutorValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Example;
@@ -19,13 +21,14 @@ import java.util.UUID;
 public class AutorService {
 
     private final AutorRepository repository;
-
     private final AutorValidator validator;
-
     private final LivroRepository livroRepository;
+    private final SecurityService securityService;
 
     public Autor salvar(Autor autor){
         validator.validar(autor);
+        Usuario usuario = securityService.obterUsuarioLogado();
+        autor.setUsuario(usuario);
         return repository.save(autor);
     }
 

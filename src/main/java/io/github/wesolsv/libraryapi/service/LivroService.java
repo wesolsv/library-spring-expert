@@ -2,8 +2,10 @@ package io.github.wesolsv.libraryapi.service;
 
 import io.github.wesolsv.libraryapi.model.GeneroLivro;
 import io.github.wesolsv.libraryapi.model.Livro;
+import io.github.wesolsv.libraryapi.model.Usuario;
 import io.github.wesolsv.libraryapi.repository.LivroRepository;
 import io.github.wesolsv.libraryapi.repository.specs.LivroSpecs;
+import io.github.wesolsv.libraryapi.security.SecurityService;
 import io.github.wesolsv.libraryapi.validator.LivroValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -23,11 +25,13 @@ import static io.github.wesolsv.libraryapi.repository.specs.LivroSpecs.*;
 public class LivroService {
 
     private final LivroRepository repository;
-
     private final LivroValidator validator;
+    private final SecurityService securityService;
 
     public Livro salvar(Livro livro) {
         validator.validar(livro);
+        Usuario usuario = securityService.obterUsuarioLogado();
+        livro.setUsuario(usuario);
         return repository.save(livro);
     }
 
