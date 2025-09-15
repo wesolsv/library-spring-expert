@@ -12,6 +12,13 @@ spring:
       ddl-auto: none
     properties:
       hibernate.format_sql: true
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 738153117760-53iob3fgfhtg5dhd202pdaqhnlm2ghmu.apps.googleusercontent.com
+            client-secret: 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
 
 ##PASSWORD POSTGRES = postgres_password
 ##LOGIN POSTGRES = postgres

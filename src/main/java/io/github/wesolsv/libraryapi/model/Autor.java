@@ -46,7 +46,7 @@ public class Autor {
     private LocalDateTime dataAtualizacao;
 
     @ManyToOne
-    @Column(name = "id_usuario")
+    @JoinColumn(name = "id_usuario")
     private Usuario usuario;
 
     @Deprecated
