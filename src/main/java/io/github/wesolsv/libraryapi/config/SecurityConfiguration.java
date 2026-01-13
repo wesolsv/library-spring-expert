@@ -38,7 +38,6 @@ public class SecurityConfiguration {
             ) throws Exception {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
-                .httpBasic(Customizer.withDefaults())
                 .formLogin(configurer ->{
                     configurer.loginPage("/login");
                 })
